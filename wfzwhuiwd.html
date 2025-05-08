@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini e-Dnevnik</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f2f2f2; margin: 0; padding: 0; }
+    header { background: #004aad; color: white; padding: 1rem; text-align: center; }
+    main { padding: 2rem; }
+    .card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+    input, select, button, textarea { display: block; width: 100%; margin-bottom: 1rem; padding: 0.5rem; }
+    h2 { color: #004aad; }
+    .login { max-width: 400px; margin: auto; background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mini e-Dnevnik</h1>
+    <p>Portal za ocjene i bilješke</p>
+  </header>
+
+  <main>
+    <!-- Login Section -->
+    <div class="login" id="loginSection">
+      <h2>Prijava</h2>
+      <select id="userRole">
+        <option value="student">Učenik</option>
+        <option value="teacher">Učitelj/Učiteljica</option>
+      </select>
+      <input type="text" id="username" placeholder="Korisničko ime" required />
+      <button onclick="login()">Prijavi se</button>
+    </div>
+
+    <!-- Grade Form Section -->
+    <div class="card hidden" id="teacherPanel">
+      <h2>Dodaj novu ocjenu</h2>
+      <form id="gradeForm">
+        <input type="text" id="studentName" placeholder="Ime učenika" required />
+        <input type="text" id="subject" placeholder="Predmet" required />
+        <input type="number" id="grade" placeholder="Ocjena (1-5)" min="1" max="5" required />
+        <textarea id="note" placeholder="Bilješka (opcionalno)"></textarea>
+        <button type="submit">Spremi ocjenu</button>
+      </form>
+    </div>
+
+    <!-- Grades List -->
+    <div class="card hidden" id="studentPanel">
+      <h2>Ocjene</h2>
+      <ul id="grades"></ul>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('gradeForm');
+    const gradesList = document.getElementById('grades');
+    const teacherPanel = document.getElementById('teacherPanel');
+    const studentPanel = document.getElementById('studentPanel');
+    const loginSection = document.getElementById('loginSection');
+
+    let storedGrades = [];
+
+    form?.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('studentName').value;
+      const subject = document.getElementById('subject').value;
+      const grade = document.getElementById('grade').value;
+      const note = document.getElementById('note').value;
+
+      const entry = { name, subject, grade, note };
+      storedGrades.push(entry);
+      updateGradeList();
+
+      form.reset();
+    });
+
+    function login() {
+      const role = document.getElementById('userRole').value;
+      const user = document.getElementById('username').value;
+      loginSection.classList.add('hidden');
+      if (role === 'teacher') {
+        teacherPanel.classList.remove('hidden');
+      } else {
+        studentPanel.classList.remove('hidden');
+        updateGradeList();
+      }
+    }
+
+    function updateGradeList() {
+      gradesList.innerHTML = '';
+      storedGrades.forEach(grade => {
+        const li = document.createElement('li');
+        li.textContent = `${grade.name} (${grade.subject}) - Ocjena: ${grade.grade}${grade.note ? ' | Bilješka: ' + grade.note : ''}`;
+        gradesList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
